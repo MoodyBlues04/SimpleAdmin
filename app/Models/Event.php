@@ -18,7 +18,7 @@ class Event extends Model
         'header',
         'text',
         'password',
-        // 'creator_id'
+        'creator_id'
     ];
 
     /**

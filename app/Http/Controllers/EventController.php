@@ -22,4 +22,15 @@ class EventController extends Controller
     {
         return response()->json($event->toArray());
     }
+
+    public function store(Request $request): JsonResponse // TODO custom request
+    {
+        $event = auth()->user()->events()->create([
+            'header' => $request->header,
+            'text' => $request->text,
+            'creator_id' => auth()->user()->id,
+        ]);
+
+        return response()->json(['ok' => true, 'result' => ['id' => $event->id]]);
+    }
 }
