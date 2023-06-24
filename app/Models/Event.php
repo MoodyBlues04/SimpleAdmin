@@ -20,4 +20,12 @@ class Event extends Model
         'password',
         // 'creator_id'
     ];
+
+    /**
+     * Users who participate in the event
+     */
+    public function users()
+    {
+        return $this->belongsToMany(User::class, 'event_user');
+    }
 }
