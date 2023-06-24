@@ -1,6 +1,7 @@
 <?php
 
-use Illuminate\Http\Request;
+use App\Http\Controllers\ApiTokenController;
+use App\Http\Controllers\RegisterController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -14,6 +15,12 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
-});
+// TODO to files
+
+// registration
+Route::post('/signup', RegisterController::class . '@signUp');
+Route::post('/login', RegisterController::class . '@logIn');
+Route::post('/logout', RegisterController::class . '@logOut'); // ?
+
+// api_token
+Route::post('/api_token', ApiTokenController::class . '@refresh');

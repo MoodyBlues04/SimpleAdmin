@@ -19,9 +19,6 @@ return new class extends Migration
             $table->string('surname');
             $table->string('birthday')->nullable();
             $table->integer('event_id')->nullable();
-            $table->string('email')->unique();
-            $table->timestamp('email_verified_at')->nullable();
-            $table->rememberToken();
             $table->timestamps();
         });
     }
