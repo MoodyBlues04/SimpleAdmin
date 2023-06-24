@@ -32,10 +32,8 @@ Route::group([
     'middleware' => 'api',
 ], function ($router) {
     Route::get('/event', EventController::class . '@index')->name('event.index');
-    // Route::get('/event/create', EventController::class . '@create')->name('event.create'); на фронте - здесь не нужно
+    Route::get('/event/{event}', EventController::class . '@show')->name('event.show'); // TODO create & edit на фронте
     Route::post('/event', EventController::class . '@store')->name('event.store');
-    Route::get('/event/{event}', EventController::class . '@show')->name('event.show');
-    // Route::get('/event/{event}/edit', EventController::class . '@edit')->name('event.edit');
     Route::put('/event/{event}', EventController::class . '@update')->name('event.update');
     Route::delete('/event/{event}', EventController::class . '@destroy')->name('event.destroy');
 });

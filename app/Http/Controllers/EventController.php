@@ -25,11 +25,32 @@ class EventController extends Controller
 
     public function store(Request $request): JsonResponse // TODO custom request
     {
+        $request->validate([
+            'header' => 'required|string|max:30',
+            'text' => 'required|string|max:150'
+        ]);
+
         $event = auth()->user()->events()->create([
             'header' => $request->header,
             'text' => $request->text,
             'creator_id' => auth()->user()->id,
         ]);
+
+        return response()->json(['ok' => true, 'result' => ['id' => $event->id]]);
+    }
+
+    public function update(Request $request, Event $event): JsonResponse
+    {
+        $request->validate([
+            'header' => 'nullable|string|max:30',
+            'text' => 'nullable|string|max:150',
+        ]);
+
+        $event->header = $request->header ?? $event->header; // TODO to request getUpdateArray
+        $event->text = $request->text ?? $event->text;
+        if (!$event->save()) {
+            return response()->json(['ok' => false, 'result' => ['message' => 'Not saved']]);
+        }
 
         return response()->json(['ok' => true, 'result' => ['id' => $event->id]]);
     }
