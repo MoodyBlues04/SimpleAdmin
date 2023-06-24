@@ -1,7 +1,7 @@
 <?php
 
 use App\Http\Controllers\ApiTokenController;
-use App\Http\Controllers\RegisterController;
+use App\Http\Controllers\AuthController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -17,10 +17,13 @@ use Illuminate\Support\Facades\Route;
 
 // TODO to files
 
-// registration
-Route::post('/signup', RegisterController::class . '@signUp');
-Route::post('/login', RegisterController::class . '@logIn');
-Route::post('/logout', RegisterController::class . '@logOut'); // ?
-
-// api_token
-Route::post('/api_token', ApiTokenController::class . '@refresh');
+Route::group([
+    'middleware' => 'api',
+    'prefix' => 'auth'
+], function ($router) {
+    Route::post('/login', AuthController::class . '@login');
+    Route::post('/register', AuthController::class . '@register');
+    Route::post('/logout', AuthController::class . '@logout');
+    Route::post('/refresh', AuthController::class . '@refresh');
+    Route::get('/user-profile', AuthController::class . '@userProfile');
+});
