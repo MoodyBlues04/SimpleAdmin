@@ -18,7 +18,6 @@ return new class extends Migration
             $table->string('name');
             $table->string('surname');
             $table->string('birthday')->nullable();
-            $table->integer('event_id')->nullable();
             $table->timestamps();
         });
     }
