@@ -12,7 +12,7 @@ class RegisterController extends Controller
     public function signUp(Request $request)
     {
         $request->validate([ // TODO custom request objects with rules method
-            'login' => 'required|string|unique:users',
+            'username' => 'required|string|unique:users',
             'name' => 'required|string',
             'surname' => 'required|string',
             'password' => 'required|string|min:6',
@@ -27,12 +27,12 @@ class RegisterController extends Controller
     public function logIn(Request $request) // TODO error handling (try-catch)
     {
         $request->validate([
-            'login' => 'required|string',
+            'username' => 'required|string',
             'password' => 'required|string',
         ]);
 
-        $credentials = $request->only('email', 'password');
-        if (Auth::attempt($credentials)) {
+        $credentials = $request->only('username', 'password');
+        if (auth('api')->validate($credentials)) {
             return response()->json(['ok' => true, 'message' => 'Logged in']); // TODO handler
         }
 
@@ -49,7 +49,7 @@ class RegisterController extends Controller
     private function create(Request $request)
     {
         return User::create([ // TODO factory | repository
-            'login' => $request->input('login'),
+            'username' => $request->input('username'),
             'name' => $request->input('name'),
             'surname' => $request->input('surname'),
             'password' => Hash::make($request->input('password')),
