@@ -54,4 +54,13 @@ class EventController extends Controller
 
         return response()->json(['ok' => true, 'result' => ['id' => $event->id]]);
     }
+
+    public function destroy(Event $event): JsonResponse
+    {
+        if (!$event->delete()) {
+            return response()->json(['ok' => false, 'result' => ['message' => 'Not deleted']]);
+        }
+
+        return response()->json(['ok' => true, 'result' => ['message' => 'Deleted']]);
+    }
 }
