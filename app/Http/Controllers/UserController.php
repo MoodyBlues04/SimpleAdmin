@@ -36,7 +36,11 @@ class UserController extends Controller
 
         $this->createUser($request);
 
-        return response()->json(['ok' => true, 'result' => ['message' => 'Signed up']], 201);
+        return response()->json([
+            'ok' => true,
+            'result' => ['message' => 'Signed up'],
+            'access_token' => auth()->attempt($request->only(['username', 'password']))
+        ], 201);
     }
 
     private function createUser(Request $request): User|bool

@@ -14,16 +14,19 @@ class AuthController extends Controller
 
     public function login(Request $request): JsonResponse
     {
-        $request->validate([
-            'username' => 'required|string',
-            'password' => 'required|string|min:6',
-        ]);
-
-        $token = auth()->attempt($request->only(['username', 'password']));
-        if (!$token) {
-            return response()->json(['error' => 'Unauthorized'], 401);
+        try {
+            $request->validate([
+                'username' => 'required|string',
+                'password' => 'required|string|min:6',
+            ]);
+            $token = auth()->attempt($request->only(['username', 'password']));
+            if (!$token) {
+                return response()->json(['error' => 'Unauthorized'], 401);
+            }
+            return $this->getTokenResponse($token);
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
         }
-        return $this->getTokenResponse($token);
     }
 
     public function logout(): JsonResponse

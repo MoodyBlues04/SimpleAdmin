@@ -20,7 +20,7 @@ use Illuminate\Support\Facades\Route;
 
 // auth
 Route::group([
-    'middleware' => 'api',
+    'middleware' => 'api'
 ], function ($router) {
     Route::post('/login', AuthController::class . '@login')->name('login');
     Route::post('/logout', AuthController::class . '@logout')->name('logout');
@@ -29,7 +29,7 @@ Route::group([
 
 // user
 Route::group([
-    'middleware' => 'api',
+    'middleware' => 'api'
 ], function ($router) {
     Route::get('/user', UserController::class . '@index')->name('user.index');
     Route::get('/user/{user}', UserController::class . '@show')->name('user.show');
@@ -38,7 +38,7 @@ Route::group([
 
 // events
 Route::group([
-    'middleware' => 'api',
+    'middleware' => 'api'
 ], function ($router) {
     Route::get('/event', EventController::class . '@index')->name('event.index');
     Route::get('/event/{event}', EventController::class . '@show')->name('event.show'); // TODO create & edit на фронте
