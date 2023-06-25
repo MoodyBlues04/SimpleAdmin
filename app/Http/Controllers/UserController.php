@@ -32,11 +32,11 @@ class UserController extends Controller
     private function createUser(Request $request): User|bool
     {
         return User::create([ // TODO factory | repository
-            'username' => $request->input('username'),
-            'name' => $request->input('name'),
-            'surname' => $request->input('surname'),
-            'password' => Hash::make($request->input('password')),
-            'birthday' => $request->input('birthday') ?? null,
+            'username' => $request->username,
+            'name' => $request->name,
+            'surname' => $request->surname,
+            'password' => Hash::make($request->password),
+            'birthday' => $request->birthday ?? null,
         ]);
     }
 }

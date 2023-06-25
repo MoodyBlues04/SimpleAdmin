@@ -36,4 +36,6 @@ Route::group([
     Route::post('/event', EventController::class . '@store')->name('event.store');
     Route::put('/event/{event}', EventController::class . '@update')->name('event.update');
     Route::delete('/event/{event}', EventController::class . '@destroy')->name('event.destroy');
+    Route::post('/event/join/{event}', EventController::class . '@join')->name('event.join');
+    Route::post('/event/cancel/{event}', EventController::class . '@cancel')->name('event.cancel');
 });

@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 /**
  * @property int $id
@@ -29,10 +31,12 @@ class Event extends Model
         'creator_id'
     ];
 
-    /**
-     * Users who participate in the event
-     */
-    public function users()
+    public function creator(): HasOne
+    {
+        return $this->hasOne(User::class);
+    }
+
+    public function joinedUsers(): BelongsToMany
     {
         return $this->belongsToMany(User::class, 'event_user');
     }

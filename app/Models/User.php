@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticable;
 use Laravel\Sanctum\HasApiTokens;
 use Tymon\JWTAuth\Contracts\JWTSubject;
@@ -73,10 +75,12 @@ class User extends Authenticable implements JWTSubject
         return [];
     }
 
-    /**
-     * Events user participate in
-     */
-    public function events()
+    public function createdEvents(): HasMany
+    {
+        return $this->hasMany(Event::class, 'creator_id');
+    }
+
+    public function joinedEvents(): BelongsToMany
     {
         return $this->belongsToMany(Event::class, 'event_user');
     }

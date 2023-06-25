@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Event;
+use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -30,10 +31,10 @@ class EventController extends Controller
             'text' => 'required|string|max:150'
         ]);
 
-        $event = auth()->user()->events()->create([
+        $event = $this->authUser()->createdEvents()->create([
             'header' => $request->header,
             'text' => $request->text,
-            'creator_id' => auth()->user()->id,
+            'creator_id' => $this->authUser()->id,
         ]);
 
         return response()->json(['ok' => true, 'result' => ['id' => $event->id]]);
@@ -66,5 +67,30 @@ class EventController extends Controller
         }
 
         return response()->json(['ok' => true, 'result' => ['message' => 'Deleted']]);
+    }
+
+    public function join(Event $event): JsonResponse
+    {
+        if ($this->authUser()->joinedEvents()->get()->contains($event)) {
+            return response()->json(['ok' => false, ['result' => "You already participate in event {$event->id}"]]);
+        }
+
+        $this->authUser()->joinedEvents()->attach($event);
+        return response()->json(['ok' => true, ['result' => "Joined event {$event->id}"]]);
+    }
+
+    public function cancel(Event $event): JsonResponse
+    {
+        if (!$this->authUser()->joinedEvents()->get()->contains($event)) {
+            return response()->json(['ok' => false, ['result' => "You are not participate in event {$event->id}"]]);
+        }
+
+        $this->authUser()->joinedEvents()->detach($event);
+        return response()->json(['ok' => true, ['result' => "Cancelled event {$event->id}"]]);
+    }
+
+    private function authUser(): User
+    {
+        return auth()->user();
     }
 }
