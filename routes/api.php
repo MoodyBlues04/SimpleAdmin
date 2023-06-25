@@ -18,16 +18,25 @@ use Illuminate\Support\Facades\Route;
 
 // TODO to files
 
-// 
+// auth
 Route::group([
     'middleware' => 'api',
 ], function ($router) {
     Route::post('/login', AuthController::class . '@login')->name('login');
-    Route::post('/register', UserController::class . '@register')->name('register');
     Route::post('/logout', AuthController::class . '@logout')->name('logout');
     Route::post('/refresh', AuthController::class . '@refresh')->name('refresh');
 });
 
+// user
+Route::group([
+    'middleware' => 'api',
+], function ($router) {
+    Route::get('/user', UserController::class . '@index')->name('user.index');
+    Route::get('/user/{user}', UserController::class . '@show')->name('user.show');
+    Route::post('/user', UserController::class . '@store')->name('user.store');
+});
+
+// events
 Route::group([
     'middleware' => 'api',
 ], function ($router) {

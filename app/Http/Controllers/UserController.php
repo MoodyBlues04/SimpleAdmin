@@ -11,10 +11,20 @@ class UserController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('auth:api', ['except' => ['register']]);
+        $this->middleware('auth:api', ['except' => ['store']]);
     }
 
-    public function register(Request $request): JsonResponse
+    public function index(): JsonResponse
+    {
+        return response()->json(User::all());
+    }
+
+    public function show(User $user): JsonResponse
+    {
+        return response()->json($user);
+    }
+
+    public function store(Request $request): JsonResponse
     {
         $request->validate([ // TODO custom request objects with rules method
             'username' => 'required|string|unique:users',
