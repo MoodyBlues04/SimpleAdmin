@@ -41,6 +41,8 @@ class EventController extends Controller
 
     public function update(Request $request, Event $event): JsonResponse
     {
+        $this->authorize('update', $event);
+
         $request->validate([
             'header' => 'nullable|string|max:30',
             'text' => 'nullable|string|max:150',
@@ -57,6 +59,8 @@ class EventController extends Controller
 
     public function destroy(Event $event): JsonResponse
     {
+        $this->authorize('delete', $event);
+
         if (!$event->delete()) {
             return response()->json(['ok' => false, 'result' => ['message' => 'Not deleted']]);
         }

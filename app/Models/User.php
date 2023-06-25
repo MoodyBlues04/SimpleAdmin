@@ -8,6 +8,16 @@ use Laravel\Sanctum\HasApiTokens;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 
 
+/**
+ * @property int $id
+ * @property string $username
+ * @property string $password
+ * @property string $name
+ * @property string $surname
+ * @property ?string $birthday
+ * @property string $created_at
+ * @property string $updated_at
+ */
 class User extends Authenticable implements JWTSubject
 {
     use HasApiTokens, HasFactory;
