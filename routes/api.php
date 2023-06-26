@@ -49,3 +49,8 @@ Route::group([
     Route::post('/event/{event}/join', EventController::class . '@join')->name('event.join');
     Route::post('/event/{event}/cancel/', EventController::class . '@cancel')->name('event.cancel');
 });
+
+// Unauthorized
+Route::get('/unauthorized', function () {
+    return response()->json(['error' => 'Unauthorized']);
+})->name('unauthorized');
