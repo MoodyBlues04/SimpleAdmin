@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
+use App\Response\ResponseHandler;
+use App\Http\Requests\LoginRequest;
+use App\Models\User;
 use Illuminate\Http\JsonResponse;
 
 class AuthController extends Controller
@@ -12,32 +14,32 @@ class AuthController extends Controller
         $this->middleware('auth:api', ['except' => ['login']]);
     }
 
-    public function login(Request $request): JsonResponse
+    public function login(LoginRequest $request): JsonResponse
     {
         try {
-            $request->validate([
-                'username' => 'required|string',
-                'password' => 'required|string|min:6',
-            ]);
             $token = auth()->attempt($request->only(['username', 'password']));
             if (!$token) {
-                return response()->json(['error' => 'Unauthorized'], 401);
+                throw new \Exception("Unauthorized");
             }
             return $this->getTokenResponse($token);
         } catch (\Exception $e) {
-            return response()->json(['error' => $e->getMessage()], 500);
+            return ResponseHandler::sendErrorResponse($e, 500);
         }
     }
 
     public function logout(): JsonResponse
     {
         auth()->logout();
-        return response()->json(['message' => 'User successfully signed out']);
+        return ResponseHandler::sendResponse('User successfully signed out');
     }
 
     public function refresh(): JsonResponse
     {
-        return $this->getTokenResponse(auth()->refresh());
+        try {
+            return ResponseHandler::sendTokenResponse(auth()->refresh());
+        } catch (\Exception $e) {
+            return ResponseHandler::sendErrorResponse($e);
+        }
     }
 
     public function profile(): JsonResponse
@@ -46,16 +48,6 @@ class AuthController extends Controller
         $user = auth()->user();
         $user->load(['createdEvents', 'joinedEvents']);
 
-        return response()->json($user);
-    }
-
-    private function getTokenResponse(string $token): JsonResponse
-    {
-        return response()->json([
-            'access_token' => $token,
-            'token_type' => 'bearer',
-            'expires_in' => auth()->factory()->getTTL() * 60,
-            'user' => auth()->user()
-        ]);
+        return ResponseHandler::sendResponse($user->toArray());
     }
 }
