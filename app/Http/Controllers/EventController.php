@@ -21,7 +21,8 @@ class EventController extends Controller
 
     public function show(Event $event): JsonResponse
     {
-        return response()->json($event->toArray());
+        $event->load(['creator', 'joinedUsers']);
+        return response()->json($event);
     }
 
     public function store(Request $request): JsonResponse // TODO custom request

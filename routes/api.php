@@ -22,9 +22,10 @@ use Illuminate\Support\Facades\Route;
 Route::group([
     'middleware' => 'api'
 ], function ($router) {
-    Route::post('/login', AuthController::class . '@login')->name('login');
-    Route::post('/logout', AuthController::class . '@logout')->name('logout');
-    Route::post('/refresh', AuthController::class . '@refresh')->name('refresh');
+    Route::post('/login', AuthController::class . '@login')->name('auth.login');
+    Route::post('/logout', AuthController::class . '@logout')->name('auth.logout');
+    Route::post('/refresh', AuthController::class . '@refresh')->name('auth.refresh');
+    Route::get('/profile', AuthController::class . '@profile')->name('auth.profile');
 });
 
 // user
@@ -45,6 +46,6 @@ Route::group([
     Route::post('/event', EventController::class . '@store')->name('event.store');
     Route::put('/event/{event}', EventController::class . '@update')->name('event.update');
     Route::delete('/event/{event}', EventController::class . '@destroy')->name('event.destroy');
-    Route::post('/event/join/{event}', EventController::class . '@join')->name('event.join');
-    Route::post('/event/cancel/{event}', EventController::class . '@cancel')->name('event.cancel');
+    Route::post('/event/{event}/join', EventController::class . '@join')->name('event.join');
+    Route::post('/event/{event}/cancel/', EventController::class . '@cancel')->name('event.cancel');
 });

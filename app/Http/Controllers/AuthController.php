@@ -40,6 +40,11 @@ class AuthController extends Controller
         return $this->getTokenResponse(auth()->refresh());
     }
 
+    public function profile(): JsonResponse
+    {
+        return response()->json(auth()->user());
+    }
+
     private function getTokenResponse(string $token): JsonResponse
     {
         return response()->json([
