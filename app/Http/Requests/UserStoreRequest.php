@@ -2,13 +2,13 @@
 
 namespace App\Http\Requests;
 
-use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Http\Response;
-use Illuminate\Validation\ValidationException;
 
-class LoginRequest extends FormRequest
+class UserStoreRequest extends FormRequest
 {
+    /**
+     * Determine if the user is authorized to make this request.
+     */
     public function authorize(): bool
     {
         return true;
@@ -22,14 +22,11 @@ class LoginRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'username' => 'required|string',
+            'username' => 'required|string|unique:users',
+            'name' => 'required|string',
+            'surname' => 'required|string',
             'password' => 'required|string|min:6',
+            'birthday' => 'nullable|date',
         ];
-    }
-
-    protected function failedValidation(Validator $validator): void
-    {
-        $response = new Response(['error' => $validator->errors()->first()], 422);
-        throw new ValidationException($validator, $response);
     }
 }

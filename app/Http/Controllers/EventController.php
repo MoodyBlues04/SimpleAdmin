@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\EventStoreRequest;
+use App\Http\Requests\EventUpdateRequest;
 use App\Models\Event;
 use App\Models\User;
+use App\Response\ResponseHandler;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 
 class EventController extends Controller
 {
@@ -21,73 +23,83 @@ class EventController extends Controller
 
     public function show(Event $event): JsonResponse
     {
-        $event->load(['creator', 'joinedUsers']);
-        return response()->json($event);
+        try {
+            $event->load(['creator', 'joinedUsers']);
+            return ResponseHandler::sendResponse($event->toArray());
+        } catch (\Exception $e) {
+            return ResponseHandler::sendErrorResponse($e);
+        }
     }
 
-    public function store(Request $request): JsonResponse // TODO custom request
+    public function store(EventStoreRequest $request): JsonResponse
     {
-        $request->validate([
-            'header' => 'required|string|max:30',
-            'text' => 'required|string|max:150'
-        ]);
-
         $event = $this->authUser()->createdEvents()->create([
             'header' => $request->header,
             'text' => $request->text,
             'creator_id' => $this->authUser()->id,
         ]);
 
-        return response()->json(['ok' => true, 'result' => ['id' => $event->id]]);
+        return ResponseHandler::sendResponse(['id' => $event->id]);
     }
 
-    public function update(Request $request, Event $event): JsonResponse
+    public function update(EventUpdateRequest $request, Event $event): JsonResponse
     {
-        $this->authorize('update', $event);
+        try {
+            $this->authorize('update', $event);
 
-        $request->validate([
-            'header' => 'nullable|string|max:30',
-            'text' => 'nullable|string|max:150',
-        ]);
+            $event->header = $request->header ?? $event->header;
+            $event->text = $request->text ?? $event->text;
+            if (!$event->save()) {
+                throw new \Exception("Not updated");
+            }
 
-        $event->header = $request->header ?? $event->header; // TODO to request getUpdateArray
-        $event->text = $request->text ?? $event->text;
-        if (!$event->save()) {
-            return response()->json(['ok' => false, 'result' => ['message' => 'Not saved']]);
+            return ResponseHandler::sendResponse(['id' => $event->id]);
+        } catch (\Exception $e) {
+            return ResponseHandler::sendErrorResponse($e);
         }
-
-        return response()->json(['ok' => true, 'result' => ['id' => $event->id]]);
     }
 
     public function destroy(Event $event): JsonResponse
     {
-        $this->authorize('delete', $event);
+        try {
+            $this->authorize('delete', $event);
 
-        if (!$event->delete()) {
-            return response()->json(['ok' => false, 'result' => ['message' => 'Not deleted']]);
+            if (!$event->delete()) {
+                throw new \Exception("Not deleted");
+            }
+
+            return ResponseHandler::sendResponse("Deleted");
+        } catch (\Exception $e) {
+            return ResponseHandler::sendErrorResponse($e);
         }
-
-        return response()->json(['ok' => true, 'result' => ['message' => 'Deleted']]);
     }
 
     public function join(Event $event): JsonResponse
     {
-        if ($this->authUser()->joinedEvents()->get()->contains($event)) {
-            return response()->json(['ok' => false, ['result' => "You already participate in event {$event->id}"]]);
-        }
+        try {
+            if ($this->authUser()->joinedEvents()->get()->contains($event)) {
+                throw new \Exception("You already participate in event {$event->id}");
+            }
 
-        $this->authUser()->joinedEvents()->attach($event);
-        return response()->json(['ok' => true, ['result' => "Joined event {$event->id}"]]);
+            $this->authUser()->joinedEvents()->attach($event);
+            return ResponseHandler::sendResponse("Joined event {$event->id}");
+        } catch (\Exception $e) {
+            return ResponseHandler::sendErrorResponse($e);
+        }
     }
 
     public function cancel(Event $event): JsonResponse
     {
-        if (!$this->authUser()->joinedEvents()->get()->contains($event)) {
-            return response()->json(['ok' => false, ['result' => "You are not participate in event {$event->id}"]]);
-        }
+        try {
+            if (!$this->authUser()->joinedEvents()->get()->contains($event)) {
+                throw new \Exception("You are not participate in event {$event->id}");
+            }
 
-        $this->authUser()->joinedEvents()->detach($event);
-        return response()->json(['ok' => true, ['result' => "Cancelled event {$event->id}"]]);
+            $this->authUser()->joinedEvents()->detach($event);
+            return ResponseHandler::sendResponse("Cancelled event {$event->id}");
+        } catch (\Exception $e) {
+            return ResponseHandler::sendErrorResponse($e);
+        }
     }
 
     private function authUser(): User

@@ -21,9 +21,10 @@ class AuthController extends Controller
             if (!$token) {
                 throw new \Exception("Unauthorized");
             }
-            return $this->getTokenResponse($token);
+            return ResponseHandler::sendTokenResponse($token);
         } catch (\Exception $e) {
             return ResponseHandler::sendErrorResponse($e, 500);
+            throw $e;
         }
     }
 

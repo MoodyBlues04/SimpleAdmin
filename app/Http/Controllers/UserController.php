@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\UserStoreRequest;
 use App\Models\User;
+use App\Response\ResponseHandler;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -21,27 +23,26 @@ class UserController extends Controller
 
     public function show(User $user): JsonResponse
     {
-        $user->load('createdEvents');
-        return response()->json($user);
+        try {
+
+            $user->load('createdEvents');
+            return ResponseHandler::sendResponse($user->toArray());
+        } catch (\Exception $e) {
+            return ResponseHandler::sendErrorResponse($e);
+        }
     }
 
-    public function store(Request $request): JsonResponse
+    public function store(UserStoreRequest $request): JsonResponse
     {
-        $request->validate([ // TODO custom request objects with rules method
-            'username' => 'required|string|unique:users',
-            'name' => 'required|string',
-            'surname' => 'required|string',
-            'password' => 'required|string|min:6',
-            'birthday' => 'nullable|date',
-        ]);
+        try {
+            $this->createUser($request);
 
-        $this->createUser($request);
-
-        return response()->json([
-            'ok' => true,
-            'result' => ['message' => 'Signed up'],
-            'access_token' => auth()->attempt($request->only(['username', 'password']))
-        ], 201);
+            return ResponseHandler::sendResponse([
+                'access_token' => $this->getAccessToken($request)
+            ], 201);
+        } catch (\Exception $e) {
+            return ResponseHandler::sendErrorResponse($e);
+        }
     }
 
     private function createUser(Request $request): User|bool
@@ -53,5 +54,10 @@ class UserController extends Controller
             'password' => Hash::make($request->password),
             'birthday' => $request->birthday ?? null,
         ]);
+    }
+
+    private function getAccessToken(Request $request): string
+    {
+        return auth()->attempt($request->only(['username', 'password']));
     }
 }
