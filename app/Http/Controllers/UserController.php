@@ -21,6 +21,7 @@ class UserController extends Controller
 
     public function show(User $user): JsonResponse
     {
+        $user->load('createdEvents');
         return response()->json($user);
     }
 

@@ -42,7 +42,11 @@ class AuthController extends Controller
 
     public function profile(): JsonResponse
     {
-        return response()->json(auth()->user());
+        /** @var User */
+        $user = auth()->user();
+        $user->load(['createdEvents', 'joinedEvents']);
+
+        return response()->json($user);
     }
 
     private function getTokenResponse(string $token): JsonResponse
