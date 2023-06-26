@@ -16,7 +16,7 @@ class ResponseHandler
 
     public static function sendErrorResponse(\Exception $e, $code =  500): JsonResponse
     {
-        return self::sendResponse($e->getMessage(), $code);
+        return self::sendResponse(['error' => $e->getMessage()], $code);
     }
 
     public static function sendTokenResponse(string $token): JsonResponse
